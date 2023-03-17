@@ -61,5 +61,9 @@ dependencies {
     debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
     debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
 
+    //to convert files into json format
     implementation 'com.google.code.gson:gson:2.8.6'
+
+    //for constraint
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
 }
