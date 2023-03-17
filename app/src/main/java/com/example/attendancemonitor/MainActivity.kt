@@ -5,19 +5,17 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.*
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-//import androidx.compose.foundation.gestures.ModifierLocalScrollableContainerProvider
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.*
-import androidx.compose.material.SnackbarDefaults.backgroundColor
+import androidx.compose.material.Card
+import androidx.compose.material.Surface
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.snapshots.SnapshotStateList
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -28,12 +26,13 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.*
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.constraintlayout.compose.ConstraintLayout
 import com.example.attendancemonitor.ui.theme.AttendanceMonitorTheme
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
-import org.w3c.dom.Text
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -54,16 +53,16 @@ class MainActivity : ComponentActivity() {
 }
 
 
-var subjects = mutableStateListOf<data>(
-    data("DBMS" ,"Data Base Management Sysytem", 0 , 0 , 100f),
-    data("JAVA" ,"JAVA", 0 , 0 , 100f),
-    data("TOC" ,"Theory of Computation", 0 , 0 , 100f),
-    data("PSLP" ,"Probability Statistics and Linear Programming", 0 , 0 , 100f),
-    data("C & S" ,"Circuits and System" , 0 , 0 , 100f),
-    data("TW" ,"Technical Writing", 0 , 0 , 100f),
+var subjects = mutableStateListOf(
+    Daata("DBMS" ,"Data Base Management System", 0 , 0 , 100f),
+    Daata("JAVA" ,"JAVA", 0 , 0 , 100f),
+    Daata("TOC" ,"Theory of Computation", 0 , 0 , 100f),
+    Daata("PSLP" ,"Probability Statistics and Linear Programming", 0 , 0 , 100f),
+    Daata("C & S" ,"Circuits and System" , 0 , 0 , 100f),
+    Daata("TW" ,"Technical Writing", 0 , 0 , 100f),
 )
 
-data class data(
+data class Daata(
     var subject : String,
     var fullname : String,
     var absent : Int ,
@@ -75,10 +74,10 @@ var colorslist = listOf(
     Color(255, 0, 132, 255),
     Color(250, 76, 0, 255),
 )
-@OptIn(ExperimentalUnitApi::class)
+
 @Composable
 fun MainList() {
-    Column() {
+    Column {
         Surface(
             modifier = Modifier
                 .height(80.dp)
@@ -97,20 +96,20 @@ fun MainList() {
                 style = TextStyle(letterSpacing = 3.sp)
             )
         }
-        Surface() {
+        Surface {
             val localDensity = LocalDensity.current
             var columnHeightDp by remember {
                 mutableStateOf(0.dp)
             }
+
                 Column(modifier = Modifier
                     .onGloballyPositioned { coordinates ->
-                        // Set column height using the LayoutCoordinates
                         columnHeightDp = with(localDensity) { coordinates.size.height.toDp() }
                     }
                     .background(Color(221, 221, 221, 255))
                     .verticalScroll(rememberScrollState())) {
                     subjects.forEach {
-                        Singleblock(it ,columnHeightDp)
+                        Singleblock(it , if(columnHeightDp>616.dp)700.dp else 600.dp)
                     }
                 }
             }
@@ -120,15 +119,16 @@ fun MainList() {
 var last : String = ""
 var secondlast : String = ""
 
-@OptIn(ExperimentalComposeUiApi::class)
 @Composable
-fun Singleblock(currentsubject : data , height : Dp) {
+fun Singleblock(currentsubject: Daata, height : Dp) {
     val context = LocalContext.current
     var expandedstate by remember { mutableStateOf(80) }
     val size by animateDpAsState(targetValue = expandedstate.dp)
     var pere by remember { mutableStateOf(currentsubject.present) }
+    var abse by remember { mutableStateOf(currentsubject.absent) }
     currentsubject.present = pere
-    if(height>616.dp && currentsubject.subject!= last){
+    currentsubject.absent = abse
+    if(currentsubject.subject!=last){
         expandedstate = 80
     }
     Card(modifier = Modifier
@@ -139,7 +139,7 @@ fun Singleblock(currentsubject : data , height : Dp) {
         elevation = 8.dp
     ) {
 
-        ConstraintLayout() {
+        ConstraintLayout {
             val (subjectname ,
                 subjectfullname,
                 presentcount ,
@@ -148,29 +148,25 @@ fun Singleblock(currentsubject : data , height : Dp) {
                 absentbuttonpos ,
                 presentbuttonpos ,
                 absentbuttonneg ,
-                presentbuttonneg
+                presentbuttonneg,
+                absenttext,
+                presenttext
             ) = createRefs()
-            val ColorA : Color
-            if(currentsubject.percentage>=75)
-                ColorA = Color(64, 255, 225, 255)
+            val colorA : Color = if(currentsubject.percentage>=75)
+                Color(64, 255, 225, 255)
             else if (currentsubject.percentage>=50)
-                ColorA = Color(255, 153, 103, 255)
+                Color(255, 153, 103, 255)
             else
-                ColorA = Color(255, 84, 84, 255)
-            var editable : Boolean
-            editable = expandedstate==120
+                Color(255, 84, 84, 255)
+            var editable : Boolean = expandedstate==120
             Text(
-                text = "${currentsubject.percentage.toInt().toString()}%\n ",
+                text = "${currentsubject.percentage.toInt()}%\n ",
                 fontStyle = FontStyle.Italic,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 75.sp,
                 color = Color.White,
                 modifier = Modifier
-                    .background(
-                        Brush.horizontalGradient(
-                            listOf(ColorA, Color.White)
-                        )
-                    )
+                    .background(Brush.horizontalGradient(listOf(colorA, Color.White)))
                     .constrainAs(percentage) {
                         top.linkTo(parent.top)
                         start.linkTo(parent.start)
@@ -194,7 +190,7 @@ fun Singleblock(currentsubject : data , height : Dp) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = currentsubject.fullname,
+                text = "${currentsubject.fullname}\n\n\nPresents for 75% : ${preq(currentsubject)}",
                 color = Color(0, 0, 0, 133),
                 fontSize = 10.sp,
                 modifier = Modifier
@@ -210,11 +206,13 @@ fun Singleblock(currentsubject : data , height : Dp) {
                 text = currentsubject.absent.toString(),
                 color = Color(240, 59, 82, 255),
                 fontSize = 30.sp,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .constrainAs(absentcount) {
                         top.linkTo(parent.top, margin = 22.dp)
-                        start.linkTo(parent.start, margin = 240.dp)
-                    },
+                        start.linkTo(parent.start, margin = 220.dp)
+                    }
+                    .width(40.dp),
                 style = TextStyle(letterSpacing = 1.sp),
                 fontWeight = FontWeight.Bold
             )
@@ -222,27 +220,127 @@ fun Singleblock(currentsubject : data , height : Dp) {
                 text = currentsubject.present.toString(),
                 color = Color(68, 174, 255, 255),
                 fontSize = 30.sp,
+                textAlign = TextAlign.Center,
                 modifier = Modifier
                     .constrainAs(presentcount) {
                         top.linkTo(parent.top, margin = 22.dp)
-                        start.linkTo(parent.start, margin = 330.dp)
-                    },
+                        start.linkTo(parent.start, margin = 310.dp)
+                    }
+                    .width(40.dp),
                 style = TextStyle(letterSpacing = 1.sp),
                 fontWeight = FontWeight.Bold
             )
             AnimatedVisibility(visible = editable,
             modifier = Modifier
                 .constrainAs(presentbuttonpos) {
-                        top.linkTo(presentcount.bottom , margin = 16.dp)
-                        start.linkTo(presentcount.start , margin = 25.dp)
-                    }
+                    top.linkTo(presentcount.bottom, margin = 16.dp)
+                    start.linkTo(presentcount.start, margin = 35.dp)
+                }
                 .clickable {
                     pere++
-                    currentsubject.present=pere
+                    currentsubject.present = pere
                     currentsubject.percentage = percentage(currentsubject)
+                    storedata(subjects, context)
                 }) {
                 Text(text = "+",
                     fontSize = 22.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black,
+                modifier = Modifier
+                )
+            }
+            AnimatedVisibility(visible = editable,
+            modifier = Modifier
+                .constrainAs(presentbuttonneg) {
+                        top.linkTo(presentcount.bottom , margin = 16.dp)
+                        end.linkTo(presentbuttonpos.start , margin = 35.dp)
+                    }
+                .clickable {
+                    if(pere>0) {
+                        pere--
+                        currentsubject.present = pere
+                        currentsubject.percentage = percentage(currentsubject)
+                        storedata(subjects , context)
+                    }
+                        }) {
+                Text(text = "-",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black,
+                modifier = Modifier
+                )
+            }
+            AnimatedVisibility(visible = editable,
+            modifier = Modifier
+                .constrainAs(absentbuttonpos) {
+                        top.linkTo(absentcount.bottom , margin = 16.dp)
+                        start.linkTo(absentcount.start , margin = 35.dp)
+                    }
+                .clickable {
+                    abse++
+                    currentsubject.absent = abse
+                    currentsubject.percentage = percentage(currentsubject)
+                    storedata(subjects , context)
+                }) {
+                Text(text = "+",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black,
+                modifier = Modifier
+                )
+            }
+            AnimatedVisibility(visible = editable,
+            modifier = Modifier
+                .constrainAs(absentbuttonneg) {
+                        top.linkTo(absentcount.bottom , margin = 16.dp)
+                        end.linkTo(absentbuttonpos.start , margin = 35.dp)
+                    }
+                .clickable {
+                    if(abse>0) {
+                        abse--
+                        currentsubject.absent = abse
+                        currentsubject.percentage = percentage(currentsubject)
+                        storedata(subjects , context) }
+                        }) {
+                Text(text = "-",
+                    fontSize = 22.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black,
+                modifier = Modifier
+                )
+            }
+            AnimatedVisibility(visible = editable,
+            modifier = Modifier
+                .width(100.dp)
+                .height(15.dp)
+                .constrainAs(absenttext) {
+                        top.linkTo(parent.top , margin = 10.dp)
+                        end.linkTo(parent.end , margin = 106.dp)
+                    }
+            ) {
+                Text(text = "ABSENTS",
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.ExtraBold,
+                    textAlign = TextAlign.Center,
+                    color = Color.Black,
+                modifier = Modifier
+                )
+            }
+            AnimatedVisibility(visible = editable,
+            modifier = Modifier
+                .width(100.dp)
+                .height(15.dp)
+                .constrainAs(presenttext) {
+                        top.linkTo(parent.top , margin = 10.dp)
+                        end.linkTo(parent.end , margin = 16.dp)
+                    }
+            ) {
+                Text(text = "PRESENTS",
+                    fontSize = 10.sp,
                     fontWeight = FontWeight.ExtraBold,
                     textAlign = TextAlign.Center,
                     color = Color.Black,
@@ -253,20 +351,19 @@ fun Singleblock(currentsubject : data , height : Dp) {
     }
 }
 
-fun percentage(it : data) : Float{
-    if(it.present+it.absent==0) return 0f
-    val pres : Float = it.present.toFloat()
-    val abs : Float = it.absent.toFloat()
-    val per : Float = (pres*100/(abs + pres))
-    return per
+fun percentage(it: Daata): Float {
+    if (it.present + it.absent == 0) return 0f
+    val pres: Float = it.present.toFloat()
+    val abs: Float = it.absent.toFloat()
+    return (pres * 100 / (abs + pres))
 }
 
-fun preq(it : data) : Int{
+fun preq(it : Daata) : Int{
     if(it.percentage >= 75f) return 0
     return 3*it.absent - it.present
 }
 
-fun storedata (it : List<data> , context: Context) {
+fun storedata (it : List<Daata>, context: Context) {
     val sharedpef = context.getSharedPreferences("attendancedatanew" , Context.MODE_PRIVATE)
     val editor = sharedpef.edit()
     val gson = Gson()
@@ -275,15 +372,14 @@ fun storedata (it : List<data> , context: Context) {
     editor.apply()
 }
 
-fun dataLoader(context: Context , ) : SnapshotStateList<data>{
+fun dataLoader(context: Context) : SnapshotStateList<Daata>{
     val shared = context.getSharedPreferences("attendancedatanew" , Context.MODE_PRIVATE)
 
     val json = shared.getString("atdatanew" , null)
 
-    if(json!=null){
-        val turnsType = object : TypeToken<SnapshotStateList<data>>(){}.type
-        val turns = Gson().fromJson<SnapshotStateList<data>>(json , turnsType)
-        return turns
+    if(json!=null) {
+        val turnsType = object : TypeToken<SnapshotStateList<Daata>>() {}.type
+        return Gson().fromJson(json, turnsType)
     }
     return subjects
 }
