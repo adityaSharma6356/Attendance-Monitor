@@ -190,7 +190,7 @@ fun Singleblock(currentsubject: Daata, height : Dp) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${currentsubject.fullname}\n\n\nPresents for 75% : ${preq(currentsubject)}",
+                text = "${currentsubject.fullname}\n\n\n\nPresents for 75% : ${preq(currentsubject)}",
                 color = Color(0, 0, 0, 133),
                 fontSize = 10.sp,
                 modifier = Modifier
@@ -210,7 +210,7 @@ fun Singleblock(currentsubject: Daata, height : Dp) {
                 modifier = Modifier
                     .constrainAs(absentcount) {
                         top.linkTo(parent.top, margin = 22.dp)
-                        start.linkTo(parent.start, margin = 220.dp)
+                        end.linkTo(parent.end, margin = 132.dp)
                     }
                     .width(40.dp),
                 style = TextStyle(letterSpacing = 1.sp),
@@ -224,7 +224,7 @@ fun Singleblock(currentsubject: Daata, height : Dp) {
                 modifier = Modifier
                     .constrainAs(presentcount) {
                         top.linkTo(parent.top, margin = 22.dp)
-                        start.linkTo(parent.start, margin = 310.dp)
+                        end.linkTo(parent.end, margin = 42.dp)
                     }
                     .width(40.dp),
                 style = TextStyle(letterSpacing = 1.sp),
