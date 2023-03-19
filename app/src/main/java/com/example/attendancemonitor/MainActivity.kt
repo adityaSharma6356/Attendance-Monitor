@@ -19,7 +19,7 @@ class MainActivity : ComponentActivity() {
                 val systemUiController = rememberSystemUiController()
                 SideEffect {
                     systemUiController.setStatusBarColor(
-                        color = Color(252, 39, 64, 255),
+                        color = Color(250, 76, 0, 255),
                         darkIcons = false
                     )
                 }
@@ -29,6 +29,7 @@ class MainActivity : ComponentActivity() {
                     color = Color(230, 226, 226, 255)
                 ) {
                     subjects = dataLoader(this )
+                    RequiredPercentage = percLoader(this)
                     MainList()
                 }
             }

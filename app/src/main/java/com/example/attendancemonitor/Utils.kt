@@ -2,6 +2,7 @@ package com.example.attendancemonitor
 
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.ui.graphics.Color
+import kotlin.math.ceil
 
 var subjects = mutableStateListOf(
     Daata("DBMS" ,"Data Base Management System", 0 , 0 , 100f),
@@ -17,6 +18,8 @@ var colorslist = listOf(
     Color(250, 76, 0, 255),
 )
 
+var RequiredPercentage = 75
+
 var last : String = ""
 var secondlast : String = ""
 
@@ -28,7 +31,12 @@ fun percentage(it: Daata): Float {
 }
 
 fun preq(it : Daata) : Int{
-    if(it.percentage >= 75f) return 0
-    return 3*it.absent - it.present
+    val pres = it.present
+    val abs = it.absent
+    if(it.percentage >= RequiredPercentage.toFloat()) return 0
+//    return 3*it.absent - it.present
+    return ceil((((abs+pres)*RequiredPercentage.toFloat()/100-pres)/((100-RequiredPercentage.toFloat())/100))).toInt()
+
+
 }
 

@@ -45,7 +45,6 @@ fun Singleblock(currentsubject: Daata, height : Dp) {
         backgroundColor = Color(255, 255, 255, 255),
         elevation = 8.dp
     ) {
-
         ConstraintLayout {
             val (subjectname ,
                 subjectfullname,
@@ -60,9 +59,9 @@ fun Singleblock(currentsubject: Daata, height : Dp) {
                 presenttext,
                 remainingpresents
             ) = createRefs()
-            val colorA : Color = if(currentsubject.percentage>=75)
+            val colorA : Color = if(currentsubject.percentage>= RequiredPercentage)
                 Color(64, 255, 225, 255)
-            else if (currentsubject.percentage>=50)
+            else if (currentsubject.percentage>= RequiredPercentage-20)
                 Color(255, 153, 103, 255)
             else
                 Color(255, 84, 84, 255)
@@ -112,7 +111,7 @@ fun Singleblock(currentsubject: Daata, height : Dp) {
             )
             if(expandedstate==120){
                 Text(
-                    text = "Presents for 75% : ${preq(currentsubject)}",
+                    text = "Presents for $RequiredPercentage% : ${preq(currentsubject)}",
                     color = Color(0, 0, 0, 133),
                     fontSize = 10.sp,
                     modifier = Modifier

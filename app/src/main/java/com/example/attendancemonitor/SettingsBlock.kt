@@ -16,6 +16,7 @@ fun SettingsBlock() {
     val context = LocalContext.current
     var openDialog by remember { mutableStateOf(false) }
     var openDialog2 by remember { mutableStateOf(false) }
+    var openDialog3 by remember { mutableStateOf(false) }
 
     Box(contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -23,7 +24,7 @@ fun SettingsBlock() {
             .height(40.dp)
             .clickable { openDialog = true }
             ) {
-        Text(text = "  Set Subject Names " , modifier = Modifier.fillMaxWidth() , fontWeight = FontWeight.Bold)
+        Text(text = "  Set Subject Names " , modifier = Modifier.fillMaxWidth() , fontWeight = FontWeight.Normal)
     }
     Box(contentAlignment = Alignment.Center,
         modifier = Modifier
@@ -31,7 +32,56 @@ fun SettingsBlock() {
             .height(40.dp)
             .clickable { openDialog2 = true }
             ) {
-        Text(text = "  Set Subject Full Names " , modifier = Modifier.fillMaxWidth() , fontWeight = FontWeight.Bold)
+        Text(text = "  Set Subject Full Names " , modifier = Modifier.fillMaxWidth() , fontWeight = FontWeight.Normal)
+    }
+    Box(contentAlignment = Alignment.Center,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(40.dp)
+            .clickable { openDialog3 = true }
+            ) {
+        Text(text = "  Set Required Percentage " , modifier = Modifier.fillMaxWidth() , fontWeight = FontWeight.Normal)
+    }
+    if(openDialog3) {
+        var percreq by remember { mutableStateOf(TextFieldValue(RequiredPercentage.toString())) }
+        AlertDialog(
+            onDismissRequest = {
+                openDialog3 = false
+            },
+            text = {
+                Column {
+                    TextField(
+                        label = {
+                            Text(text = "Required Percentage")
+                        },
+                        value = percreq,
+                        onValueChange = { percreq = it }
+                    )
+                }
+            },
+            buttons = {
+                Column(
+                    modifier = Modifier.padding(all = 8.dp),
+                    verticalArrangement = Arrangement.SpaceEvenly
+                ) {
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = { openDialog3 = false }
+                    ) {
+                        Text("Dismiss")
+                    }
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            storedata(percreq.text.toInt() , context)
+                            RequiredPercentage = percreq.text.toInt()
+                            openDialog3 = false }
+                    ) {
+                        Text("SAVE")
+                    }
+                }
+            }
+        )
     }
     if (openDialog) {
         var text6 by remember { mutableStateOf(TextFieldValue(subjects[5].subject)) }

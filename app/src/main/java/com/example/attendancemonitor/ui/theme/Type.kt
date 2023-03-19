@@ -10,8 +10,8 @@ import com.example.attendancemonitor.R
 
 
 val best = FontFamily(
-    Font(R.font.montserrat_extrabold),
     Font(R.font.montserrat_regular),
+    Font(R.font.montserrat_extrabold),
     Font(R.font.montserrat_bold),
     Font(R.font.montserrat_blackitalic),
     Font(R.font.montserrat_bolditalic),

@@ -26,7 +26,7 @@ import com.example.attendancemonitor.ui.theme.best
 
 @Composable
 fun MainList() {
-    var change by remember { mutableStateOf(true) }
+    var change by remember { mutableStateOf(false) }
     Column {
         Surface(
             modifier = Modifier
@@ -49,7 +49,7 @@ fun MainList() {
                     .height(30.dp)
                     .constrainAs(attendancetitle){
                         top.linkTo(parent.top , margin = 30.dp)
-                        start.linkTo(parent.start , margin = 40.dp)
+                        start.linkTo(parent.start , margin = 25.dp)
                     }
                     .background(boxonecolor, RoundedCornerShape(50)),
                     contentAlignment = Alignment.Center)
@@ -79,7 +79,7 @@ fun MainList() {
                     .height(30.dp)
                     .constrainAs(settingstitle){
                         top.linkTo(parent.top , margin = 30.dp)
-                        end.linkTo(parent.end , margin = 40.dp)
+                        end.linkTo(parent.end , margin = 25.dp)
                     }
                     .background(boxtwocolor, RoundedCornerShape(50)),
                     contentAlignment = Alignment.Center)
